@@ -1,7 +1,8 @@
 (ns clojure-course-task02.util-test
   (:require [clojure-course-task02.util :as target])
   (:require [clojure.test :as test])
-  (import java.io.File))
+  (import java.io.File)
+  (import java.io.FileFilter))
 
 (test/deftest file-filter-test
   (test/testing "File filter matching."
