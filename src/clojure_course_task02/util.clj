@@ -1,13 +1,16 @@
-(ns clojure-course-task02.util)
+(ns clojure-course-task02.util
+  (:import java.io.File)
+  (:import java.io.FileFilter)
+  (:import java.util.regex.Pattern))
 
 (defn create-filter
   "Returns file filter.
 Returns filter accepts only files which names matches to given regular expression."
-  ^java.io.FileFilter
+  ^FileFilter
   [regex]
-  (let [pattern (java.util.regex.Pattern/compile regex)]
-    (proxy [java.io.FileFilter] []
-      (accept [^java.io.File file]
+  (let [pattern (Pattern/compile regex)]
+    (proxy [FileFilter] []
+      (accept [^File file]
         (-> pattern
             (.matcher (.getName file))
             (.matches))))))
