@@ -1,10 +1,9 @@
 (ns clojure-course-task02.core
+  (:require [clojure-course-task02.search :as s])
   (:gen-class))
 
-
 (defn find-files [file-name path]
-  "TODO: Implement searching for a file using his name as a regexp."
-  nil)
+  (s/search path file-name))
 
 (defn usage []
   (println "Usage: $ run.sh file_name path"))
