@@ -1,9 +1,9 @@
 (ns clojure-course-task02.core
-  (:require [clojure-course-task02.search :as s])
+  (:require [clojure-course-task02.fork-join :as fj])
   (:gen-class))
 
 (defn find-files [file-name path]
-  (s/search path file-name))
+  (fj/search path file-name))
 
 (defn usage []
   (println "Usage: $ run.sh file_name path"))

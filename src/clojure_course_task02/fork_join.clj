@@ -1,4 +1,4 @@
-(ns clojure-course-task02.search
+(ns clojure-course-task02.fork-join
   (:require [clojure-course-task02.util :as util])
   (:require [clojure-course-task02.io :as io])
   (:require [clojure-course-task02.type :as type])
@@ -6,20 +6,6 @@
   (import java.io.FileFilter)
   (import java.util.concurrent.RecursiveAction)
   (import java.util.concurrent.ForkJoinPool))
-
-(defn only-files
-  "Filter only files from array of File objects."
-  {:tag (type/type-hint-array-of File)}
-  [files]
-  (filter (fn [^File f] (.isFile f)) files)
-  )
-
-(defn only-directories
-  "Filter only directories from array of File objects."
-  {:tag (type/type-hint-array-of File)}
-  [files]
-  (filter (fn [^File f] (.isDirectory f)) files)
-  )
 
 (defn update-result
   [^clojure.lang.IRef result
@@ -43,13 +29,13 @@
                                         (map #(create-search-task (str dir File/separator (io/file-name %))
                                                                   filter
                                                                   result)
-                                             (only-directories ls)))]
+                                             (util/only-directories ls)))]
         (do
           (when (not (empty recursive-tasks))
             (RecursiveAction/invokeAll recursive-tasks)
             (update-result result
                            (into-array (util/filter-files filter
-                                                          (only-files ls))))))))))
+                                                          (util/only-files ls))))))))))
 
 (defn search
   "Search files inside given directory using Fork join pool framework."

@@ -22,3 +22,17 @@ Returns filter accepts only files which names matches to given regular expressio
   [^FileFilter filter-impl
    files]
   (filter #(.accept filter-impl %) files))
+
+(defn only-files
+  "Filter only files from array of File objects."
+  {:tag (type/type-hint-array-of File)}
+  [files]
+  (filter (fn [^File f] (.isFile f)) files)
+  )
+
+(defn only-directories
+  "Filter only directories from array of File objects."
+  {:tag (type/type-hint-array-of File)}
+  [files]
+  (filter (fn [^File f] (.isDirectory f)) files)
+  )
