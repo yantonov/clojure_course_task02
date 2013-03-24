@@ -1,4 +1,5 @@
 (ns clojure-course-task02.util
+  (:require [clojure-course-task02.type :as type])
   (:import java.io.File)
   (:import java.io.FileFilter)
   (:import java.util.regex.Pattern))
@@ -7,7 +8,7 @@
   "Returns file filter.
 Returns filter accepts only files which names matches to given regular expression."
   ^FileFilter
-  [regex]
+  [^String regex]
   (let [pattern (Pattern/compile regex)]
     (proxy [FileFilter] []
       (accept [^File file]
@@ -17,5 +18,7 @@ Returns filter accepts only files which names matches to given regular expressio
 
 (defn filter-files
   "Returns only filtered files"
-  [filter-impl files]
+  {:tag (type/type-hint-array-of File)}
+  [^FileFilter filter-impl
+   files]
   (filter #(.accept filter-impl %) files))
