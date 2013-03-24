@@ -37,10 +37,10 @@
                            (into-array (util/filter-files filter
                                                           (util/only-files ls))))))))))
 
-(defn search
+(defn find-files
   "Search files inside given directory using Fork join pool framework."
-  [^String dir
-   ^String filter-regex]
+  [^String filter-regex
+   ^String dir]
   (let [fjp (ForkJoinPool.)
         filter (util/create-filter filter-regex)
         result (ref [])
