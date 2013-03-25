@@ -5,10 +5,10 @@
 
 (defn find-files [file-name path]
   ;; fork join terrible solution
-  ;; (fj/find-files file-name path)
+  (fj/find-files file-name path)
 
   ;; another agent based terrible solution
-  (as/find-files file-name path)
+  ;; (as/find-files file-name path)
   )
 
 (defn usage []
