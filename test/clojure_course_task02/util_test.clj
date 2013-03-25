@@ -7,7 +7,7 @@
 (test/deftest file-filter-test
   (test/testing "File filter matching."
     (test/are [regex filename verdict]
-              (= verdict (.accept (target/create-filter regex) (File. filename)))
+              (= verdict ((target/create-filter regex) (File. filename)))
               "readme\\.txt" "readme.txt" true
               ".*\\.txt" "readme.txt" true
               ".*el" "tmp.txt" false

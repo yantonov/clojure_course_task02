@@ -5,10 +5,10 @@
 
 (defn find-files [file-name path]
   ;; fork join terrible solution
-  (fj/find-files file-name path)
+  ;; (fj/find-files file-name path)
 
   ;; another agent based terrible solution
-  ;; (as/find-files file-name path)
+  (as/find-files file-name path)
   )
 
 (defn usage []
@@ -20,4 +20,5 @@
     (usage)
     (do
       (println "Searching for " file-name " in " path "...")
-      (dorun (map println (find-files file-name path))))))
+      (dorun (map println (find-files file-name path)))
+      (shutdown-agents))))

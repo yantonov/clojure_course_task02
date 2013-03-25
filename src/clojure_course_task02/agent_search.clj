@@ -1,54 +1,61 @@
 (ns clojure-course-task02.agent-search
   (:require [clojure-course-task02.util :as util])
   (:require [clojure-course-task02.io :as io])
-  (import java.io.File)
-  (import java.io.FileFilter))
+  (import java.io.File))
 
 (def ^:dynamic *workers-count* (.availableProcessors (Runtime/getRuntime)))
 (def workers (atom []))
 (def filtered-files (ref []))
 (def progress (atom 0))
+(def reduce-agent (agent 0))
 
 (defn add-filtered-files
-  [^FileFilter file-filter files]
-  (let [new-files (filter (fn [^File f] (.accept file-filter f)) files)]
-    (when (not (empty? new-files))
-      (dosync
-       (alter filtered-files
-              concat
-              (map #(io/file-name %) new-files))))))
+  [file-filter files]
+  (when-let [ls (seq (map #(io/file-name %)
+                          (util/filter-files file-filter files)))]
+    (send reduce-agent
+          (fn [a] (dosync
+                   (alter filtered-files
+                          concat
+                          ls)) a))))
 
 (declare read-dir)
 
-(defn schedule-worker-jobs [count]
-  (swap! progress + count))
+(defn schedule-worker-jobs [jobs-count]
+  (swap! progress + jobs-count))
 
 (defn send-workers [dirs]
   (schedule-worker-jobs (count dirs))
   (doseq [d dirs]
     (let [worker-index (rem (System/currentTimeMillis) *workers-count*)
           worker (@workers worker-index)]
-      (send-off worker read-dir d)))
-  )
+
+      (send-off worker read-dir d))))
 
 (defn worker-job-done [worker]
-  (swap! progress dec))
+  (swap! progress - 1))
 
 (defn read-dir
   [worker dir]
   (let [ls (io/list-files dir)
-        f (util/only-files ls)
-        d (map #(str dir (File/separator) (io/file-name %))
-               (util/only-directories ls))]
-    (add-filtered-files worker f)
-    (send-workers d)
-    worker))
+        {files :file dirs :dir} (util/split-files-and-directories ls)
+        dir-names (map #(str dir
+                             (File/separator)
+                             (io/file-name %))
+                       dirs)]
+    (add-filtered-files worker files)
+    (send-workers dir-names)
+    (worker-job-done worker)
+    worker)
+  )
 
 (defn create-agent [file-filter index]
-  (add-watch (agent file-filter)
-             (keyword (str "watch-" index))
-             (fn [key reference old-state new-state]
-               (worker-job-done reference))))
+  (let [a (agent file-filter)]
+    (add-watch a
+               (keyword (str "watch-" index))
+               (fn [key reference old-state new-state]
+                 nil))
+    a))
 
 (defn init-workers [file-filter]
   (let [coll (vec (map (fn [i] (create-agent file-filter i))
@@ -56,15 +63,14 @@
     (swap! workers (fn [a] coll))))
 
 (defn init [file-filter dir-to-search]
-  (swap! progress (fn [a] 0))
+  (swap! progress (fn [_] 0))
   (dosync (ref-set filtered-files []))
   (init-workers file-filter)
   (send-workers (list dir-to-search))
   )
 
 (defn wait-completion []
-  (while (not (zero? @progress)) 1)
-  )
+  (while (not (zero? @progress)) nil))
 
 (defn find-files
   [^String regex
