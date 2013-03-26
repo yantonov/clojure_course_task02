@@ -15,7 +15,7 @@ Returns filter accepts only files which names matches to given regular expressio
   {:tag (type/type-hint-array-of File)}
   [file-filter
    files]
-  (filter #(file-filter %) files))
+  (filter file-filter files))
 
 (defn split-files-and-directories
   "Returns map with two keys :file :dir.
