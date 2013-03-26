@@ -25,14 +25,12 @@
     (compute []
       (let [ls (io/list-files dir)
             {files :file dirs :dir} (util/split-files-and-directories ls)
-            recursive-tasks (into-array
-                             RecursiveAction
-                             (map #(create-search-task (str dir
-                                                            File/separator
-                                                            (io/file-name %))
-                                                       file-filter
-                                                       result)
-                                  dirs))]
+            recursive-tasks (map #(create-search-task (str dir
+                                                           File/separator
+                                                           (io/file-name %))
+                                                      file-filter
+                                                      result)
+                                 dirs)]
         (do
           (when (not (empty? recursive-tasks))
             (RecursiveAction/invokeAll recursive-tasks))
