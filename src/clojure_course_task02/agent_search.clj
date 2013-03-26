@@ -28,7 +28,7 @@
       (send-off worker read-dir d))))
 
 (defn worker-job-done [worker]
-  (swap! progress - 1))
+  (swap! progress dec))
 
 (defn read-dir
   [worker dir]
