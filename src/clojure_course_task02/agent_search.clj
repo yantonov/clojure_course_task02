@@ -7,17 +7,12 @@
 (def workers (atom []))
 (def filtered-files (ref []))
 (def progress (atom 0))
-(def reduce-agent (agent 0))
 
 (defn add-filtered-files
   [file-filter files]
   (when-let [ls (seq (map #(io/file-name %)
                           (util/filter-files file-filter files)))]
-    (send reduce-agent
-          (fn [a] (dosync
-                   (alter filtered-files
-                          concat
-                          ls)) a))))
+    (dosync (alter filtered-files concat ls))))
 
 (declare read-dir)
 
