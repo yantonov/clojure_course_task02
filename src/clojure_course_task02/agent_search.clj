@@ -55,10 +55,10 @@
 (defn init-workers [file-filter]
   (let [coll (vec (map (fn [i] (create-agent file-filter i))
                        (range *workers-count*)))]
-    (swap! workers (fn [a] coll))))
+    (reset! workers coll)))
 
 (defn init [file-filter dir-to-search]
-  (swap! progress (fn [_] 0))
+  (reset! progress 0)
   (dosync (ref-set filtered-files []))
   (init-workers file-filter)
   (send-workers (list dir-to-search))
